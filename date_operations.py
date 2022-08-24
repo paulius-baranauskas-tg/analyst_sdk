@@ -91,6 +91,14 @@ def str_to_datetime(dt, format="%Y-%m-%d"):
 
 
 def last_day_of_month(date):
+    """Takes date and returns last day of month.
+
+    Args:
+        date (datetime.date): Date for which to find last day of month.
+
+    Returns:
+        datetime.date: Last day of month for input date.
+    """
     date = date_add(date, months=1)
     date = date.replace(day=1)
     date = date_add(date, days=-1)
