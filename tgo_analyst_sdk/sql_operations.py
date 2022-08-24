@@ -10,11 +10,9 @@ import pandas as pd
 
 def _read_parameter(parameter: str, decrypt: bool) -> str:
     """Internal function to read parameters from aws parameter store.
-
     Args:
         parameter (str): Parameter name
         decrypt (bool): Boolean to use encrypted or not value.
-
     Returns:
         str: Parameter value.
     """
@@ -26,7 +24,6 @@ def _read_parameter(parameter: str, decrypt: bool) -> str:
 
 def get_user() -> str:
     """Gets Redshift user name.
-
     Returns:
         str: User name for Redshift.
     """
@@ -35,7 +32,6 @@ def get_user() -> str:
 
 def get_password() -> str:
     """Gets Redshift password.
-
     Returns:
         str: Redshift password.
     """
@@ -46,11 +42,9 @@ def get_password() -> str:
 
 def execute_sql_query(sql, engine):
     """Executes SQL query remotely. No data downloading.
-
     Args:
         sql (str): SQL query.
         engine (str): Formatted engine string.
-
     Returns:
         _type_: Any response server sends.
     """
@@ -59,10 +53,8 @@ def execute_sql_query(sql, engine):
 
 def create_sql_engine(host):
     """Prepares an sql engine string that can be used in download_data or execute_sql_query functions
-
     Args:
         host (str): Host address for sql.
-
     Returns:
         srt: string formatted for usage.
     """    
@@ -73,11 +65,9 @@ def create_sql_engine(host):
 
 def download_data(sql, engine):
     """Runs SQL query and downloads data to Pandas DataFrame.
-
     Args:
         sql (str): SQL query that is used for downloading data.
         engine (str): Already created driver.
-
     Returns:
         pd.DataFrame: output dataframe.
     """
