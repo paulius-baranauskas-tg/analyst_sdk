@@ -16,7 +16,7 @@ def _read_parameter(parameter: str, decrypt: bool) -> str:
     Returns:
         str: Parameter value.
     """
-    ssm_client = boto3.client("ssm")
+    ssm_client = boto3.client("ssm", region_name="eu-west-1")
     return ssm_client.get_parameter(Name=parameter, WithDecryption=decrypt)[
         "Parameter"
     ]["Value"]
