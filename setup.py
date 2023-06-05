@@ -13,7 +13,6 @@ setup(
         "scikit-learn>=1.0",
         "boto3>=1.26",
         "sqlalchemy>=2.0",
-        "urllib>=2.0",
         "pandas>=1.5",
         "sqlalchemy-redshift>=0.8.14",
         "redshift_connector>=2.0.910",
