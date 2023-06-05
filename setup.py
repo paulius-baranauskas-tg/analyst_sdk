@@ -10,7 +10,7 @@ setup(
     url='https://github.com/pauliusbar/analyst_sdk',
     install_requires=[
         "dateutils>=0.6.12",
-        "sklearn>=1.0",
+        "scikit-learn>=1.0",
         "boto3>=1.26",
         "sqlalchemy>=2.0",
         "urllib>=2.0",
