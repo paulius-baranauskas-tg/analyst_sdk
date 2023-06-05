@@ -9,7 +9,7 @@ setup(
     author_email='paulius.baranauskas@transfergo.com',
     url='https://github.com/pauliusbar/analyst_sdk',
     install_requires=[
-        "dateutils>",
+        "dateutils",
         "scikit-learn",
         "boto3",
         "sqlalchemy",
