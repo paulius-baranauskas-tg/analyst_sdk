@@ -6,15 +6,16 @@ Most common pyhton functions used in TransferGo analytical scripts.
 
 ## Installation
 
-Installation consists of 2 steps: module file creation, and module installation.
+To install this package, use:
 
-To create a module file, in project directory run:
+```bash
+pip install git+https://github.com/paulius-baranauskas-tg/analyst_sdk@master
+```
 
-`python setup.py sdist`
+If pip or git is not available (for example, when using conda environments), you need to install git and pip. This can be done using this command:
 
-This should create a module file under `dist` directory.
+```bash
+conda install git pip
+```
 
-To install module then run:
-`pip install ./dist/[file with module name].tar.gz`
-Note that this file will have version number, thus use `Tab` to complete filename for you.
-More info in this [StackOverflow](https://stackoverflow.com/questions/15746675/how-to-write-a-python-module-package) thread.
+Requires: `dateutils`, `scikit-learn`, `boto3`, `sqlalchemy`, `pandas`, `sqlalchemy-redshift`, `redshift_connector`, `psycopg2-binary`. All installed during setup.
