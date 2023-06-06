@@ -19,3 +19,19 @@ conda install git pip
 ```
 
 Requires: `dateutils`, `scikit-learn`, `boto3`, `sqlalchemy`, `pandas`, `sqlalchemy-redshift`, `redshift_connector`, `psycopg2-binary`. All installed during setup.
+
+## Usage
+
+This library has two main function groups: `date_operations` and `sql_operations`.
+
+`date_operations` contains functions that make it easier to add periods in Python, generate range, convert types.
+
+```Python
+from tgo_analyst_sdk.date_operations import date_add, generate_date_range
+```
+
+`sql_operations` contains functions to get connection to Redshift server details, such as user name and password. It also contains wrappers for downloading data and executing sql queries.
+
+```Python
+from tgo_analyst_sdk.sql_operations import get_user, download_data
+```
