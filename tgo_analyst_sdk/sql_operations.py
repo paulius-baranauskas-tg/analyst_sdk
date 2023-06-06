@@ -75,7 +75,6 @@ def download_data(sql, engine):
     downloaded_data = pd.DataFrame()
     iteration = 0
     for chunk in pd.read_sql_query(text(sql), engine, chunksize=5000):
-        print(f"iteration {iteration}: {datetime.now()}")
         downloaded_data = downloaded_data.append(chunk, ignore_index=True)
 
     return downloaded_data
