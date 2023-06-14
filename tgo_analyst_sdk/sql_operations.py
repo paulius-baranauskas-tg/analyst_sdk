@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 
 
-def _read_parameter(parameter: str, decrypt: bool) -> str:
+def read_parameter(region_name: str, parameter: str, decrypt: bool) -> str:
     """Internal function to read parameters from aws parameter store.
     Args:
         parameter (str): Parameter name
@@ -16,28 +16,10 @@ def _read_parameter(parameter: str, decrypt: bool) -> str:
     Returns:
         str: Parameter value.
     """
-    ssm_client = boto3.client("ssm", region_name="eu-west-1")
+    ssm_client = boto3.client("ssm", region_name=region_name)
     return ssm_client.get_parameter(Name=parameter, WithDecryption=decrypt)[
         "Parameter"
     ]["Value"]
-
-
-def get_user() -> str:
-    """Gets Redshift user name.
-    Returns:
-        str: User name for Redshift.
-    """
-    return _read_parameter(parameter="/DataTeam/Redshift/ml_user", decrypt=False)
-
-
-def get_password() -> str:
-    """Gets Redshift password.
-    Returns:
-        str: Redshift password.
-    """
-    return _read_parameter(
-        parameter="/DataTeam/Redshift/ml_user_password", decrypt=True
-    )
 
 
 def execute_sql_query(sql, engine):
