@@ -17,18 +17,51 @@ class sql_operations:
         )
 
     @staticmethod
-    def read_parameter(region_name, parameter, decrypt=False):
+    def read_parameter(region_name: str, parameter: str, decrypt=False):
+        """Reads parameter value from AWS Parameter Store.
+        This is a wrapper to Boto3 get_parameter method.
+        https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm/client/get_parameter.html
+
+        Args:
+            region_name (str): AWS Region name.
+            parameter (str): Parameter name in AWS Parameter Store.
+            decrypt (bool, optional): Return decrypted values for secure string parameters. Defaults to False.
+
+        Returns:
+            str: Value of parameter selected from dictionary.
+        """
         ssm_client = boto3.client("ssm", region_name=region_name)
         return ssm_client.get_parameter(Name=parameter, WithDecryption=decrypt)[
             "Parameter"
         ]["Value"]
 
-    def _create_sql_engine(self, region_name, user_parameter, password_parameter, host):
+    def _create_sql_engine(
+        self, region_name: str, user_parameter: str, password_parameter: str, host: str
+    ):
+        """Creates Redshift SQL engine in SQLAlchemy.
+
+        Args:
+            region_name (str): AWS region name.
+            user_parameter (str): User parameter name in AWS Parameter Store.
+            password_parameter (str): Password parameter name in AWS Parameter Store.
+            host (str): Redshift server host address.
+
+        Returns:
+            sqlalchemy.engine.base.Engine: Redshift SQL engine populated with region, username, password, host.
+        """
         self.engine = create_engine(
             f"""redshift+psycopg2://{self.read_parameter(region_name, user_parameter, True)}:{quote(self.read_parameter(region_name, password_parameter, True))}@{host}"""
         )
 
-    def download_data(self, sql):
+    def download_data(self, sql: str):
+        """Uses SQLAlchemy to download data and populate it to Pandas DataFrame.
+
+        Args:
+            sql (str): SQL query.
+
+        Returns:
+            pandas.core.frame.DataFrame: Pandas DataFrame with downloaded data.
+        """
         downloaded_data = pd.DataFrame()
         iteration = 0
         for chunk in pd.read_sql_query(text(sql), self.engine, chunksize=5000):
@@ -36,5 +69,11 @@ class sql_operations:
 
         return downloaded_data
 
-    def execute_sql_query(self, sql):
-        return self.engine.execute(sql)
+    def execute_sql_query(self, sql: str):
+        """Uses SQLAlchemy execute method to execute sql query inside database.
+        This method does not return any data.
+
+        Args:
+            sql (str): SQL query to execute in database.
+        """
+        self.engine.execute(sql)

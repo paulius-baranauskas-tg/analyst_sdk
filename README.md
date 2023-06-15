@@ -33,5 +33,5 @@ from tgo_analyst_sdk.date_operations import date_add, generate_date_range
 `sql_operations` contains functions to get connection to Redshift server details, such as user name and password. It also contains wrappers for downloading data and executing sql queries.
 
 ```Python
-from tgo_analyst_sdk.sql_operations import get_user, download_data
+from tgo_analyst_sdk.sql_operations import sql_operations
 ```
