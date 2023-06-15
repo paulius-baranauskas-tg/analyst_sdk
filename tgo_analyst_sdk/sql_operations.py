@@ -8,73 +8,72 @@ from datetime import datetime
 import pandas as pd
 
 
-def _read_parameter(parameter: str, decrypt: bool) -> str:
-    """Internal function to read parameters from aws parameter store.
-    Args:
-        parameter (str): Parameter name
-        decrypt (bool): Boolean to use encrypted or not value.
-    Returns:
-        str: Parameter value.
-    """
-    ssm_client = boto3.client("ssm", region_name="eu-west-1")
-    return ssm_client.get_parameter(Name=parameter, WithDecryption=decrypt)[
-        "Parameter"
-    ]["Value"]
+class sql_operations:
+    def __init__(
+        self, region_name, user_parameter_name, password_parameter_name, server_host
+    ):
+        self._create_sql_engine(
+            region_name, user_parameter_name, password_parameter_name, server_host
+        )
 
+    @staticmethod
+    def read_parameter(region_name: str, parameter: str, decrypt=False):
+        """Reads parameter value from AWS Parameter Store.
+        This is a wrapper to Boto3 get_parameter method.
+        https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm/client/get_parameter.html
 
-def get_user() -> str:
-    """Gets Redshift user name.
-    Returns:
-        str: User name for Redshift.
-    """
-    return _read_parameter(parameter="/DataTeam/Redshift/ml_user", decrypt=False)
+        Args:
+            region_name (str): AWS Region name.
+            parameter (str): Parameter name in AWS Parameter Store.
+            decrypt (bool, optional): Return decrypted values for secure string parameters. Defaults to False.
 
+        Returns:
+            str: Value of parameter selected from dictionary.
+        """
+        ssm_client = boto3.client("ssm", region_name=region_name)
+        return ssm_client.get_parameter(Name=parameter, WithDecryption=decrypt)[
+            "Parameter"
+        ]["Value"]
 
-def get_password() -> str:
-    """Gets Redshift password.
-    Returns:
-        str: Redshift password.
-    """
-    return _read_parameter(
-        parameter="/DataTeam/Redshift/ml_user_password", decrypt=True
-    )
+    def _create_sql_engine(
+        self, region_name: str, user_parameter: str, password_parameter: str, host: str
+    ):
+        """Creates Redshift SQL engine in SQLAlchemy.
 
+        Args:
+            region_name (str): AWS region name.
+            user_parameter (str): User parameter name in AWS Parameter Store.
+            password_parameter (str): Password parameter name in AWS Parameter Store.
+            host (str): Redshift server host address.
 
-def execute_sql_query(sql, engine):
-    """Executes SQL query remotely. No data downloading.
-    Args:
-        sql (str): SQL query.
-        engine (str): Formatted engine string.
-    Returns:
-        _type_: Any response server sends.
-    """
-    return engine.execute(sql)
+        Returns:
+            sqlalchemy.engine.base.Engine: Redshift SQL engine populated with region, username, password, host.
+        """
+        self.engine = create_engine(
+            f"""redshift+psycopg2://{self.read_parameter(region_name, user_parameter, True)}:{quote(self.read_parameter(region_name, password_parameter, True))}@{host}"""
+        )
 
+    def download_data(self, sql: str):
+        """Uses SQLAlchemy to download data and populate it to Pandas DataFrame.
 
-def create_sql_engine(host):
-    """Prepares an sql engine string that can be used in download_data or execute_sql_query functions
-    Args:
-        host (str): Host address for sql.
-    Returns:
-        srt: string formatted for usage.
-    """    
-    return create_engine(
-        f"""redshift+psycopg2://{get_user()}:{quote(get_password())}@{host}"""
-    )
+        Args:
+            sql (str): SQL query.
 
+        Returns:
+            pandas.core.frame.DataFrame: Pandas DataFrame with downloaded data.
+        """
+        downloaded_data = pd.DataFrame()
+        iteration = 0
+        for chunk in pd.read_sql_query(text(sql), self.engine, chunksize=5000):
+            downloaded_data = downloaded_data.append(chunk, ignore_index=True)
 
-def download_data(sql, engine):
-    """Runs SQL query and downloads data to Pandas DataFrame.
-    Args:
-        sql (str): SQL query that is used for downloading data.
-        engine (str): Already created driver.
-    Returns:
-        pd.DataFrame: output dataframe.
-    """
+        return downloaded_data
 
-    downloaded_data = pd.DataFrame()
-    iteration = 0
-    for chunk in pd.read_sql_query(text(sql), engine, chunksize=5000):
-        downloaded_data = downloaded_data.append(chunk, ignore_index=True)
+    def execute_sql_query(self, sql: str):
+        """Uses SQLAlchemy execute method to execute sql query inside database.
+        This method does not return any data.
 
-    return downloaded_data
+        Args:
+            sql (str): SQL query to execute in database.
+        """
+        self.engine.execute(sql)
