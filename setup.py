@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='tgo_analyst_sdk',
-    version='0.0.3',
+    version='0.1.0',
     description='Commonly used custom Python functions in analytical tasks.',
     packages=['tgo_analyst_sdk'],
     author='Paulius Baranauskas',
