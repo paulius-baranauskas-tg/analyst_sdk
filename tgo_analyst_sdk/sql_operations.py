@@ -65,7 +65,7 @@ class sql_operations:
         downloaded_data = pd.DataFrame()
         iteration = 0
         for chunk in pd.read_sql_query(text(sql), self.engine, chunksize=5000):
-            downloaded_data = downloaded_data.append(chunk, ignore_index=True)
+            downloaded_data = pd.concat([chunk, downloaded_data])
 
         return downloaded_data
 
