@@ -68,10 +68,7 @@ class sql_operations:
         for chunk in pd.read_sql_query(text(sql), self.engine, chunksize=5000):
             tmp.append(chunk)
         if len(tmp) > 0:
-            try:
-                downloaded_data = pd.concat(tmp, ignore_index=True)
-            except ValueError as e:
-                raise e
+            downloaded_data = pd.concat(tmp, ignore_index=True)
 
         return downloaded_data
 
