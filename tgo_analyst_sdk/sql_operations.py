@@ -66,6 +66,8 @@ class sql_operations:
         for chunk in pd.read_sql_query(text(sql), self.engine, chunksize=5000):
             downloaded_data = downloaded_data.append(chunk, ignore_index=True)
 
+        return downloaded_data
+
     def execute_sql_query(self, sql: str):
         """Uses SQLAlchemy execute method to execute sql query inside database.
         This method does not return any data.
