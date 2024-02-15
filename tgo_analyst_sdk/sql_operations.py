@@ -62,11 +62,11 @@ class sql_operations:
         Returns:
             pandas.core.frame.DataFrame: Pandas DataFrame with downloaded data.
         """
-        downloaded_data = pd.DataFrame()
+        downloaded_data = []
         for chunk in pd.read_sql_query(text(sql), self.engine, chunksize=5000):
-            downloaded_data = downloaded_data.append(chunk, ignore_index=True)
+            downloaded_data.append(chunk)
 
-        return downloaded_data
+        return pd.concat(downloaded_data)
 
     def execute_sql_query(self, sql: str):
         """Uses SQLAlchemy execute method to execute sql query inside database.
